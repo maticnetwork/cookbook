@@ -1,7 +1,8 @@
 ## Indra <> Mumbai 
 Connext integration with Matic's Mumbai testnet
 
-Goerli<>Mumbai Node hosted at: `https://indra-mumbai.matic.today`
+- Goerli<>Mumbai Node hosted at: `https://indra-mumbai.matic.today`
+- Node account: `0x77090680C358f57E3b9406044E0597E7504791fA`
 
 ### Setup config
 
