@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@connext/client": "^7.3.7"
+    "@connext/client": "^7.3.7",
+    "node-color-log": "^5.1.0"
   }
 }

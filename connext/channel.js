@@ -2,6 +2,7 @@ const { connect } = require('@connext/client')
 const { getFileStore } = require('@connext/store')
 const { Wallet, utils } = require('ethers')
 const { alice, childChain, parentChain, indraNodeUrl } = require('./config.json')
+const logger = require('node-color-log')
 
 /**
  * returns connection parameters for the `connect` function, to instantiate a channel
@@ -18,31 +19,48 @@ function getConnectionParams (rpc, pvtKey) {
     logLevel: 1
   })
 }
+/**
+ * generates and returns a wallet for a given wallet - used to instantiate channel on Indra node
+ * @param {signer(ethers) object} wallet that signs on a string to generate a priv key
+ * @param {string} string ideally name of the network (or chain id) where the generated wallet will be used
+ */
+async function generateWallet (wallet, string) {
+  let message = `Create my channel on ${string}, yo.`
+  logger.info('signing on message', message)
+  let signedMessage = await wallet.signMessage(message)
+  let hashedMessage = await utils.hashMessage(signedMessage)
+  let generatedWallet = new Wallet(utils.HDNode.fromSeed(hashedMessage).privateKey)
+  return generatedWallet
+}
 
 /**
- * Create and connect to channels
- * Returns two channels, channels[0] is the ephemeral channel created deterministically from the given private key (params) connected to Mumbai
- * and channels[1] is the channel for the given user connected to Goerli
+ * Instantiates and returns 2 generated channels for a given private key
+ * The two channels are instantiated from deterministically created wallets
+ * returns an object of the two channels
  */
 async function connectToChannels() {
   let wallet = new Wallet(alice)
+  
+  logger
+    .bold().bgColor('blue').log('Alice')
+    .bold().log('address: ').joint().log(wallet.address)
+    .bold().log('private key: ').joint().log(wallet.privateKey)
+    .log()
 
-  let signedMessage = await wallet.signMessage('Initiating connext fast withdraw')
-  let hashedMessage = await utils.hashMessage(signedMessage)
-  let nodeFromSeed = utils.HDNode.fromSeed(hashedMessage)
-  let ephemeralWallet = new Wallet(nodeFromSeed.privateKey)
-
-  const ephemeralMumbaiParams = getConnectionParams(
+  walletMumbai = await generateWallet(wallet, 'Mumbai')
+  walletGoerli = await generateWallet(wallet, 'Goerli')
+  const mumbaiChannelParams = getConnectionParams(
     childChain,
-    ephemeralWallet.privateKey
+    walletMumbai.privateKey
   )
-  const aliceGoerliParams = getConnectionParams(
+  const goerliChannelParams = getConnectionParams(
     parentChain,
-    alice
+    walletGoerli.privateKey
   )
+  
   let _channels = await Promise.all ([
-    connect(ephemeralMumbaiParams), 
-    connect(aliceGoerliParams)
+    connect(mumbaiChannelParams), 
+    connect(goerliChannelParams)
   ])
   return { channels: _channels }
 }
