@@ -25,7 +25,7 @@ function getConnectionParams (rpc, pvtKey) {
  * @param {string} string ideally name of the network (or chain id) where the generated wallet will be used
  */
 async function generateWallet (wallet, string) {
-  let message = `Create my channel on ${string}, yo.`
+  let message = `Initiating connext channel on ${string}`
   logger.info('signing on message', message)
   let signedMessage = await wallet.signMessage(message)
   let hashedMessage = await utils.hashMessage(signedMessage)
