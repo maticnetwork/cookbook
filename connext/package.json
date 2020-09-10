@@ -1,0 +1,16 @@
+{
+  "name": "connext",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@connext/client": "^7.3.7",
+    "node-color-log": "^5.1.0"
+  }
+}
